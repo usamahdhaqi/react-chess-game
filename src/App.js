@@ -42,14 +42,11 @@ function App() {
 
     const newSquares = {};
     moves.forEach((move) => {
-      newSquares[move.to] = {
-        background: 'radial-gradient(circle, #DFCCFB 25%, transparent 25%)',
-        borderRadius: '50%'
-      };
+      newSquares[move.to] = { className: 'highlight-to' };
     });
-    newSquares[square] = {
-      background: 'rgba(190, 173, 250, 0.4)'
-    };
+
+    // Kotak asal bidak
+    newSquares[square] = { className: 'highlight-from' };
 
     setOptionSquares(newSquares);
     return true;
@@ -177,15 +174,19 @@ function App() {
               onSquareClick={onSquareClick}
               onSquareRightClick={onSquareRightClick}
               boardOrientation={boardOrientation}
-              customSquareStyles={{
-                ...optionSquares,
-                ...rightClickedSquares,
+              customSquareClasses={{
+                ...Object.fromEntries(
+                  Object.entries(optionSquares).map(([sq, val]) => [sq, val.className])
+                ),
+                ...Object.fromEntries(
+                  Object.entries(rightClickedSquares).map(([sq, val]) => [sq, val.className])
+                )
               }}
               customBoardStyle={{
                 borderRadius: '4px',
                 boxShadow: '0 5px 15px rgba(0, 0, 0, 0.15)',
                 width: '100%',
-                height: '100%',
+                height: '100%'
               }}
               customDarkSquareStyle={{ backgroundColor: '#BEADFA' }}
               customLightSquareStyle={{ backgroundColor: '#DFCCFB' }}
