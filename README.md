@@ -1,70 +1,127 @@
-# Getting Started with Create React App
+# ♟️ React Chess Game
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+![Stars](https://img.shields.io/github/stars/your-username/react-chess-game?style=social)
+![License](https://img.shields.io/github/license/your-username/react-chess-game)
+![React](https://img.shields.io/badge/React-18.2.0-61DAFB?logo=react)
+![NPM](https://img.shields.io/badge/npm-v9.6.7-CB3837?logo=npm)
 
-## Available Scripts
+------------------------------------------------------------------------
 
-In the project directory, you can run:
+## 📌 Deskripsi
 
-### `npm start`
+**React Chess Game** adalah aplikasi permainan catur sederhana berbasis
+**React.js** dengan fitur: - Click-to-Move (pindahkan bidak dengan klik,
+bukan drag). - Lawan AI sederhana (random move). - Tampilan modern
+dengan tema pastel ungu. - Fitur **flip board**, reset game, dan riwayat
+langkah.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Aplikasi ini cocok sebagai **mini project** untuk belajar React,
+integrasi dengan library `chess.js`, dan UI interaktif dengan
+`react-chessboard`.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+------------------------------------------------------------------------
 
-### `npm test`
+## 🚀 Fitur Utama
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+-   ✅ **Click-to-Move**: pilih bidak dengan klik lalu klik kotak
+    tujuan.
+-   ✅ **AI Otomatis**: setelah langkah valid, AI akan bergerak
+    otomatis.
+-   ✅ **Game Status**: tampilkan giliran, check, checkmate, atau draw.
+-   ✅ **Move History**: daftar langkah game yang berjalan.
+-   ✅ **Flip Board**: ganti orientasi papan (White / Black).
+-   ✅ **Responsive Design**: menyesuaikan ukuran layar.
 
-### `npm run build`
+------------------------------------------------------------------------
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## 🛠️ Teknologi yang Digunakan
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+-   [React.js](https://react.dev/) - Library UI utama
+-   [chess.js](https://github.com/jhlywa/chess.js) - Logika permainan
+    catur
+-   [react-chessboard](https://github.com/Clariity/react-chessboard) -
+    Komponen papan catur interaktif
+-   \[Tailwind CSS / Custom CSS\] - Styling modern responsif
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+------------------------------------------------------------------------
 
-### `npm run eject`
+## 📂 Struktur Proyek
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+    react-chess-game/
+    │── public/                # File publik (favicon, index.html)
+    │── src/
+    │   ├── App.js             # Komponen utama aplikasi
+    │   ├── App.css            # Styling khusus aplikasi
+    │   ├── index.js           # Entry point React
+    │── package.json           # Konfigurasi project & dependencies
+    │── README.md              # Dokumentasi
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+------------------------------------------------------------------------
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## ⚙️ Instalasi & Menjalankan
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+1.  **Clone repositori**
 
-## Learn More
+    ``` bash
+    git clone https://github.com/your-username/react-chess-game.git
+    cd react-chess-game
+    ```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+2.  **Install dependencies**
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+    ``` bash
+    npm install
+    ```
 
-### Code Splitting
+3.  **Jalankan aplikasi**
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+    ``` bash
+    npm start
+    ```
 
-### Analyzing the Bundle Size
+4.  **Build untuk produksi**
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+    ``` bash
+    npm run build
+    ```
 
-### Making a Progressive Web App
+------------------------------------------------------------------------
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## 🎮 Cara Bermain
 
-### Advanced Configuration
+1.  Klik pada **bidak milik Anda** (putih jalan lebih dulu).\
+2.  Kotak asal akan diberi highlight **ungu** dan kotak tujuan ditandai
+    **lingkaran ungu**.\
+3.  Klik kotak tujuan untuk memindahkan bidak.\
+4.  Setelah langkah valid, **AI akan otomatis bergerak**.\
+5.  Game akan berakhir jika **Checkmate** atau **Draw**.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+------------------------------------------------------------------------
 
-### Deployment
+## 📸 Screenshot
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+### Tampilan Awal
 
-### `npm run build` fails to minify
+![Screenshot](https://via.placeholder.com/600x400.png?text=React+Chess+Game+Screenshot)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+------------------------------------------------------------------------
+
+## 📜 Lisensi
+
+Proyek ini dirilis di bawah lisensi **MIT**.\
+Silakan gunakan, modifikasi, dan kembangkan lebih lanjut.
+
+------------------------------------------------------------------------
+
+## ✨ Kontribusi
+
+Kontribusi sangat terbuka 🚀\
+- Buat **fork** repository ini\
+- Lakukan perubahan\
+- Kirim **pull request**
+
+------------------------------------------------------------------------
+
+## 👨‍💻 Pengembang
+
+Dibuat dengan ❤️ menggunakan React oleh **Your Name**.
