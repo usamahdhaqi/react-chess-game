@@ -1,7 +1,7 @@
 # ♟️ React Chess Game
 
-![Stars](https://img.shields.io/github/stars/your-username/react-chess-game?style=social)
-![License](https://img.shields.io/github/license/your-username/react-chess-game)
+![Stars](https://img.shields.io/github/stars/usamahdhaqi/react-chess-game?style=social)
+![License](https://img.shields.io/github/license/usamahdhaqi/react-chess-game)
 ![React](https://img.shields.io/badge/React-18.2.0-61DAFB?logo=react)
 ![NPM](https://img.shields.io/badge/npm-v9.6.7-CB3837?logo=npm)
 
@@ -63,7 +63,7 @@ integrasi dengan library `chess.js`, dan UI interaktif dengan
 1.  **Clone repositori**
 
     ``` bash
-    git clone https://github.com/your-username/react-chess-game.git
+    git clone https://github.com/usamahdhaqi/react-chess-game.git
     cd react-chess-game
     ```
 
@@ -124,4 +124,4 @@ Kontribusi sangat terbuka 🚀\
 
 ## 👨‍💻 Pengembang
 
-Dibuat dengan ❤️ menggunakan React oleh **Your Name**.
+Dibuat dengan ❤️ menggunakan React oleh **usamahdhaqi**.
