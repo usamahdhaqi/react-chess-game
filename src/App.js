@@ -6,14 +6,13 @@ import './App.css';
 function App() {
   const [game, setGame] = useState(new Chess());
   const [boardOrientation, setBoardOrientation] = useState('white');
-  const [moveFrom, setMoveFrom] = useState('');
   const [optionSquares, setOptionSquares] = useState({});
   const [rightClickedSquares, setRightClickedSquares] = useState({});
   const [moveHistory, setMoveHistory] = useState([]);
   const [status, setStatus] = useState('In Progress');
   const [turn, setTurn] = useState('White');
 
-  // ✅ update status game (pakai API chess.js v1.x)
+  // ✅ update status game
   const updateGameStatus = useCallback(() => {
     if (game.in_checkmate()) setStatus('Checkmate!');
     else if (game.in_draw()) setStatus('Draw!');
@@ -28,25 +27,29 @@ function App() {
     updateGameStatus();
   }, [game, updateGameStatus]);
 
-  // ✅ highlight moves ketika klik bidak
-  function getMoveOptions(square) {
-    const moves = game.moves({ square, verbose: true });
+  // ✅ eksekusi move
+  function makeMove(from, to) {
+    try {
+      const gameCopy = new Chess(game.fen());
+      const move = gameCopy.move({ from, to, promotion: 'q' });
 
-    if (moves.length === 0) {
-      setOptionSquares({});
-      return false;
+      if (move) {
+        setGame(gameCopy);
+        setMoveHistory((prev) => [...prev, move.san]);
+
+        // highlight asal & tujuan
+        const newSquares = {
+          [from]: { className: 'highlight-from' },
+          [to]: { className: 'highlight-to' },
+        };
+        setOptionSquares(newSquares);
+
+        return move;
+      }
+    } catch (error) {
+      return null;
     }
-
-    const newSquares = {};
-    moves.forEach((move) => {
-      newSquares[move.to] = { className: 'highlight-to' };
-    });
-
-    // kotak asal
-    newSquares[square] = { className: 'highlight-from' };
-
-    setOptionSquares(newSquares);
-    return true;
+    return null;
   }
 
   // ✅ AI move sederhana (random)
@@ -66,7 +69,13 @@ function App() {
 
     setGame(gameCopy);
     setMoveHistory((prev) => [...prev, move.san]);
-    setOptionSquares({});
+
+    // highlight asal & tujuan AI
+    const newSquares = {
+      [move.from]: { className: 'highlight-from' },
+      [move.to]: { className: 'highlight-to' },
+    };
+    setOptionSquares(newSquares);
   }
 
   // ✅ reset game
@@ -76,57 +85,17 @@ function App() {
     setMoveHistory([]);
     setOptionSquares({});
     setRightClickedSquares({});
-    setMoveFrom('');
     setStatus('In Progress');
     setTurn('White');
   }
 
-  // ✅ click-to-move logic
-  function onSquareClick(square) {
-    setRightClickedSquares({});
+  // ✅ drop handler (simulasi click-to-move)
+  function onDrop(sourceSquare, targetSquare) {
+    const move = makeMove(sourceSquare, targetSquare);
+    if (!move) return false;
 
-    if (!moveFrom) {
-      const piece = game.get(square);
-      if (piece && piece.color === game.turn()[0]) {
-        setMoveFrom(square);
-        getMoveOptions(square);
-      }
-    } else {
-      const move = makeMove(moveFrom, square);
-
-      if (!move) {
-        const piece = game.get(square);
-        if (piece && piece.color === game.turn()[0]) {
-          setMoveFrom(square);
-          getMoveOptions(square);
-          return;
-        }
-        setMoveFrom('');
-        setOptionSquares({});
-        return;
-      }
-
-      setTimeout(makeAIMove, 300);
-      setMoveFrom('');
-      setOptionSquares({});
-    }
-  }
-
-  // ✅ eksekusi move
-  function makeMove(from, to) {
-    try {
-      const gameCopy = new Chess(game.fen());
-      const move = gameCopy.move({ from, to, promotion: 'q' });
-
-      if (move) {
-        setGame(gameCopy);
-        setMoveHistory((prev) => [...prev, move.san]);
-        return move;
-      }
-    } catch (error) {
-      return null;
-    }
-    return null;
+    setTimeout(makeAIMove, 300);
+    return true;
   }
 
   // ✅ right click mark square
@@ -160,9 +129,10 @@ function App() {
             <Chessboard
               id="styled-board"
               position={game.fen()}
-              onSquareClick={onSquareClick}
+              onPieceDrop={onDrop}          // ✅ klik diproses lewat drop
               onSquareRightClick={onSquareRightClick}
               boardOrientation={boardOrientation}
+              arePiecesDraggable={false}    // 🚀 drag dimatikan
               customSquareClasses={{
                 ...Object.fromEntries(
                   Object.entries(optionSquares).map(([sq, val]) => [sq, val.className])
@@ -222,9 +192,7 @@ function App() {
             <p className="status-text">{status}</p>
             <p className="turn-text">Turn: {turn}</p>
             <p className="instruction">
-              {!moveFrom
-                ? 'Click on your piece to move'
-                : 'Click on destination square'}
+              Click a piece, then click a destination square
             </p>
           </div>
         </div>
