@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Chessboard } from 'react-chessboard';
-import { Chess } from 'chess.js';
+import { Chess } from 'chess.js';   // ✅ sesuai chess.js v1.x
 import './App.css';
 
 function App() {
@@ -13,12 +13,12 @@ function App() {
   const [status, setStatus] = useState('In Progress');
   const [turn, setTurn] = useState('White');
 
-  // ✅ fungsi update status game
+  // ✅ update status game (pakai API chess.js v1.x)
   const updateGameStatus = useCallback(() => {
-    if (game.isCheckmate()) setStatus('Checkmate!');
-    else if (game.isDraw()) setStatus('Draw!');
-    else if (game.isCheck()) setStatus('Check!');
-    else if (game.isStalemate()) setStatus('Stalemate!');
+    if (game.in_checkmate()) setStatus('Checkmate!');
+    else if (game.in_draw()) setStatus('Draw!');
+    else if (game.in_check()) setStatus('Check!');
+    else if (game.in_stalemate()) setStatus('Stalemate!');
     else setStatus('In Progress');
 
     setTurn(game.turn() === 'w' ? 'White' : 'Black');
@@ -30,10 +30,7 @@ function App() {
 
   // ✅ highlight moves ketika klik bidak
   function getMoveOptions(square) {
-    const moves = game.moves({
-      square,
-      verbose: true
-    });
+    const moves = game.moves({ square, verbose: true });
 
     if (moves.length === 0) {
       setOptionSquares({});
@@ -45,14 +42,14 @@ function App() {
       newSquares[move.to] = { className: 'highlight-to' };
     });
 
-    // Kotak asal bidak
+    // kotak asal
     newSquares[square] = { className: 'highlight-from' };
 
     setOptionSquares(newSquares);
     return true;
   }
 
-  // ✅ fungsi AI move sederhana
+  // ✅ AI move sederhana (random)
   function makeAIMove() {
     const possibleMoves = game.moves({ verbose: true });
     if (possibleMoves.length === 0) return;
@@ -88,16 +85,13 @@ function App() {
   function onSquareClick(square) {
     setRightClickedSquares({});
 
-    // klik pertama: pilih bidak
     if (!moveFrom) {
       const piece = game.get(square);
       if (piece && piece.color === game.turn()[0]) {
         setMoveFrom(square);
         getMoveOptions(square);
       }
-    } 
-    // klik kedua: tujuan bidak
-    else {
+    } else {
       const move = makeMove(moveFrom, square);
 
       if (!move) {
@@ -112,7 +106,6 @@ function App() {
         return;
       }
 
-      // jika langkah valid → AI main setelah 300ms
       setTimeout(makeAIMove, 300);
       setMoveFrom('');
       setOptionSquares({});
@@ -123,11 +116,7 @@ function App() {
   function makeMove(from, to) {
     try {
       const gameCopy = new Chess(game.fen());
-      const move = gameCopy.move({
-        from,
-        to,
-        promotion: 'q'
-      });
+      const move = gameCopy.move({ from, to, promotion: 'q' });
 
       if (move) {
         setGame(gameCopy);
@@ -177,9 +166,11 @@ function App() {
               customSquareClasses={{
                 ...Object.fromEntries(
                   Object.entries(optionSquares).map(([sq, val]) => [sq, val.className])
-                ),
+                )
+              }}
+              customSquareStyles={{
                 ...Object.fromEntries(
-                  Object.entries(rightClickedSquares).map(([sq, val]) => [sq, val.className])
+                  Object.entries(rightClickedSquares).map(([sq, val]) => [sq, val])
                 )
               }}
               customBoardStyle={{
