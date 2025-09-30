@@ -12,8 +12,14 @@ function App() {
   const [status, setStatus] = useState('In Progress');
   const [turn, setTurn] = useState('White');
   
-  // ✅ Tambahkan state ini untuk click-to-move
+  // ✅ State baru: Melacak warna yang dimainkan oleh pengguna ('w' untuk White, 'b' untuk Black)
+  const [userColor, setUserColor] = useState('w'); // Default: Pengguna bermain sebagai Putih
+  
+  // ✅ State untuk Click-to-Move (Deklarasi yang hilang)
   const [sourceSquare, setSourceSquare] = useState(''); // Kotak asal yang dipilih
+
+  // Tentukan warna AI berdasarkan warna pengguna
+  const aiColor = userColor === 'w' ? 'b' : 'w';
 
   // ✅ update status game
   const updateGameStatus = useCallback(() => {
@@ -26,37 +32,21 @@ function App() {
     setTurn(game.turn() === 'w' ? 'White' : 'Black');
   }, [game]);
 
+  // ✅ Logika inisial AI move (Jika pengguna bermain Hitam)
   useEffect(() => {
     updateGameStatus();
-  }, [game, updateGameStatus]);
-
-  // ✅ eksekusi move
-  function makeMove(from, to) {
-    try {
-      const gameCopy = new Chess(game.fen());
-      const move = gameCopy.move({ from, to, promotion: 'q' });
-
-      if (move) {
-        setGame(gameCopy);
-        setMoveHistory((prev) => [...prev, move.san]);
-
-        // highlight asal & tujuan
-        const newSquares = {
-          [from]: { className: 'highlight-from' },
-          [to]: { className: 'highlight-to' }, // Menggunakan highlight-to untuk move final
-        };
-        setOptionSquares(newSquares);
-
-        return move;
-      }
-    } catch (error) {
-      return null;
+    
+    // Panggil makeAIMove jika ini giliran AI dan belum ada gerakan yang dilakukan (hanya di awal)
+    if (userColor === 'b' && game.turn() === 'w' && moveHistory.length === 0 && status === 'In Progress') {
+      setTimeout(makeAIMove, 500); // Beri sedikit delay untuk pengalaman yang lebih baik
     }
-    return null;
-  }
-  
+  }, [game, updateGameStatus, userColor, moveHistory, status]);
+
   // ✅ Highlight kemungkinan gerakan
   function highlightMoves(square) {
+    // Hanya izinkan pengguna menyorot bidak jika itu giliran mereka
+    if (game.turn() !== userColor || game.game_over()) return;
+
     const moves = game.moves({
       square: square,
       verbose: true,
@@ -78,11 +68,54 @@ function App() {
     setOptionSquares(newSquares);
   }
 
+  // ✅ eksekusi move
+  function makeMove(from, to) {
+    // Hanya izinkan move jika game belum berakhir dan ini giliran pengguna
+    if (game.game_over() || game.turn() !== userColor) {
+        return null;
+    }
+    
+    try {
+      const gameCopy = new Chess(game.fen());
+      // Lakukan gerakan, asumsikan promosi menjadi Ratu ('q')
+      const move = gameCopy.move({ from, to, promotion: 'q' });
+
+      if (move) {
+        setGame(gameCopy);
+        setMoveHistory((prev) => [...prev, move.san]);
+
+        // highlight asal & tujuan
+        const newSquares = {
+          [from]: { className: 'highlight-from' },
+          [to]: { className: 'highlight-to' },
+        };
+        setOptionSquares(newSquares);
+        
+        // Panggil AI jika ini giliran AI berikutnya
+        if (!gameCopy.game_over() && gameCopy.turn() === aiColor) {
+            setTimeout(makeAIMove, 300);
+        }
+
+        return move;
+      }
+    } catch (error) {
+      // Gerakan tidak valid
+      return null;
+    }
+    return null;
+  }
+
   // ✅ AI move sederhana (random)
   function makeAIMove() {
+    // Hentikan jika game selesai atau ini bukan giliran AI
+    if (game.game_over() || game.turn() !== aiColor) {
+        return;
+    }
+    
     const possibleMoves = game.moves({ verbose: true });
     if (possibleMoves.length === 0) return;
 
+    // Pilih langkah acak
     const randomIndex = Math.floor(Math.random() * possibleMoves.length);
     const move = possibleMoves[randomIndex];
 
@@ -111,48 +144,49 @@ function App() {
     setMoveHistory([]);
     setOptionSquares({});
     setRightClickedSquares({});
-    setStatus('In Progress');
-    setTurn('White');
-    setSourceSquare(''); // Reset sourceSquare
+    // Status akan diperbarui oleh useEffect
+    // userColor tetap dipertahankan
   }
 
   // ✅ onSquareClick handler untuk click-to-move
   function onSquareClick(square) {
+    // Pastikan game belum berakhir
+    if (game.game_over()) return;
+
     setRightClickedSquares({}); // Hapus highlight klik kanan setiap kali klik baru
     
     // 1. Jika belum ada kotak asal yang dipilih
     if (!sourceSquare) {
-      // Pastikan kotak punya bidak dan itu giliran pemain
+      // Pastikan kotak punya bidak dan itu giliran pengguna
       const piece = game.get(square);
-      if (piece && piece.color === game.turn()) {
+      if (piece && piece.color === userColor && game.turn() === userColor) {
         setSourceSquare(square);
         highlightMoves(square);
         return;
       }
-      return; // Abaikan klik jika bukan giliran pemain atau kotak kosong
+      return; // Abaikan klik jika bukan giliran pengguna, atau kotak kosong
     }
 
     // 2. Jika kotak asal sudah dipilih (ini klik kedua/tujuan)
     const move = makeMove(sourceSquare, square);
 
-    // Jika gerakan berhasil
+    // Jika gerakan berhasil (makeMove sudah memicu AI jika giliran AI berikutnya)
     if (move) {
       setSourceSquare(''); // Reset kotak asal
       setOptionSquares({}); // Hapus sorotan
-      setTimeout(makeAIMove, 300);
       return;
     }
 
     // 3. Jika klik kedua tidak valid, tetapi klik di bidak sendiri
     // Ini berarti pemain ingin mengganti bidak yang akan digerakkan
     const piece = game.get(square);
-    if (piece && piece.color === game.turn()) {
+    if (piece && piece.color === userColor && game.turn() === userColor) {
       setSourceSquare(square);
       highlightMoves(square);
       return;
     }
     
-    // 4. Jika klik kedua tidak valid sama sekali (misal, klik di kotak kosong)
+    // 4. Jika klik kedua tidak valid sama sekali (misal, klik di kotak kosong yang bukan target)
     setSourceSquare('');
     setOptionSquares({});
   }
@@ -172,14 +206,22 @@ function App() {
 
   // ✅ flip board
   function flipBoard() {
-    setBoardOrientation(boardOrientation === 'white' ? 'black' : 'white');
+    // Ganti orientasi papan
+    setBoardOrientation(prev => {
+        const newOrientation = prev === 'white' ? 'black' : 'white';
+        // Pengguna bermain warna di bagian bawah papan
+        setUserColor(newOrientation === 'white' ? 'w' : 'b'); 
+        return newOrientation;
+    });
+    // Mulai game baru setelah flip
+    resetGame();
   }
 
   return (
     <div className="app">
       <header className="app-header">
         <h1>Modern Chess Game</h1>
-        <p>Play against a simple AI opponent</p>
+        <p>Anda bermain sebagai: <span style={{ fontWeight: 'bold', color: userColor === 'w' ? '#5a4b81' : '#333' }}>{userColor === 'w' ? 'Putih' : 'Hitam'}</span></p>
       </header>
 
       <div className="game-container">
@@ -249,9 +291,9 @@ function App() {
           <div className="game-status">
             <h3>Game Status</h3>
             <p className="status-text">{status}</p>
-            <p className="turn-text">Turn: {turn}</p>
+            <p className="turn-text">Giliran: {turn}</p>
             <p className="instruction">
-              Click a piece, then click a destination square
+              Klik bidak Anda, lalu klik kotak tujuan.
             </p>
           </div>
         </div>
