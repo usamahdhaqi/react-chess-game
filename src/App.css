@@ -52,17 +52,25 @@
 /* HIGHLIGHT CLICK-TO-MOVE */
 /* ===================== */
 
-/* Highlight kotak asal bidak */
+/* Highlight kotak asal bidak (kotak penuh ungu) */
 .highlight-from {
   background-color: rgba(190, 173, 250, 0.35) !important;
   box-shadow: inset 0 0 10px rgba(90, 75, 129, 0.7);
 }
 
-/* Highlight kotak tujuan (lingkaran ungu) */
-.highlight-to {
+/* Highlight kotak tujuan yang valid (lingkaran ungu). */
+/* Class ini digunakan oleh highlightMoves di App.js */
+.highlight-target {
   background: radial-gradient(circle, rgba(190, 173, 250, 0.9) 35%, transparent 36%);
   border-radius: 50%;
 }
+
+/* Highlight kotak tujuan akhir (setelah move dilakukan) */
+.highlight-to {
+  background-color: rgba(255, 248, 201, 0.5) !important;
+  box-shadow: inset 0 0 5px rgba(255, 165, 0, 0.5);
+}
+
 
 /* Hover efek tambahan */
 .square:hover {

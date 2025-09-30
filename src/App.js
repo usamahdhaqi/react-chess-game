@@ -11,6 +11,9 @@ function App() {
   const [moveHistory, setMoveHistory] = useState([]);
   const [status, setStatus] = useState('In Progress');
   const [turn, setTurn] = useState('White');
+  
+  // ✅ Tambahkan state ini untuk click-to-move
+  const [sourceSquare, setSourceSquare] = useState(''); // Kotak asal yang dipilih
 
   // ✅ update status game
   const updateGameStatus = useCallback(() => {
@@ -40,7 +43,7 @@ function App() {
         // highlight asal & tujuan
         const newSquares = {
           [from]: { className: 'highlight-from' },
-          [to]: { className: 'highlight-to' },
+          [to]: { className: 'highlight-to' }, // Menggunakan highlight-to untuk move final
         };
         setOptionSquares(newSquares);
 
@@ -50,6 +53,29 @@ function App() {
       return null;
     }
     return null;
+  }
+  
+  // ✅ Highlight kemungkinan gerakan
+  function highlightMoves(square) {
+    const moves = game.moves({
+      square: square,
+      verbose: true,
+    });
+
+    if (moves.length === 0) {
+      setOptionSquares({});
+      return;
+    }
+
+    const newSquares = {};
+    newSquares[square] = { className: 'highlight-from' }; // Kotak asal
+
+    // Sorot semua kotak tujuan yang valid (menggunakan highlight-target)
+    moves.forEach((move) => {
+      newSquares[move.to] = { className: 'highlight-target' };
+    });
+
+    setOptionSquares(newSquares);
   }
 
   // ✅ AI move sederhana (random)
@@ -87,15 +113,48 @@ function App() {
     setRightClickedSquares({});
     setStatus('In Progress');
     setTurn('White');
+    setSourceSquare(''); // Reset sourceSquare
   }
 
-  // ✅ drop handler (simulasi click-to-move)
-  function onDrop(sourceSquare, targetSquare) {
-    const move = makeMove(sourceSquare, targetSquare);
-    if (!move) return false;
+  // ✅ onSquareClick handler untuk click-to-move
+  function onSquareClick(square) {
+    setRightClickedSquares({}); // Hapus highlight klik kanan setiap kali klik baru
+    
+    // 1. Jika belum ada kotak asal yang dipilih
+    if (!sourceSquare) {
+      // Pastikan kotak punya bidak dan itu giliran pemain
+      const piece = game.get(square);
+      if (piece && piece.color === game.turn()) {
+        setSourceSquare(square);
+        highlightMoves(square);
+        return;
+      }
+      return; // Abaikan klik jika bukan giliran pemain atau kotak kosong
+    }
 
-    setTimeout(makeAIMove, 300);
-    return true;
+    // 2. Jika kotak asal sudah dipilih (ini klik kedua/tujuan)
+    const move = makeMove(sourceSquare, square);
+
+    // Jika gerakan berhasil
+    if (move) {
+      setSourceSquare(''); // Reset kotak asal
+      setOptionSquares({}); // Hapus sorotan
+      setTimeout(makeAIMove, 300);
+      return;
+    }
+
+    // 3. Jika klik kedua tidak valid, tetapi klik di bidak sendiri
+    // Ini berarti pemain ingin mengganti bidak yang akan digerakkan
+    const piece = game.get(square);
+    if (piece && piece.color === game.turn()) {
+      setSourceSquare(square);
+      highlightMoves(square);
+      return;
+    }
+    
+    // 4. Jika klik kedua tidak valid sama sekali (misal, klik di kotak kosong)
+    setSourceSquare('');
+    setOptionSquares({});
   }
 
   // ✅ right click mark square
@@ -129,10 +188,10 @@ function App() {
             <Chessboard
               id="styled-board"
               position={game.fen()}
-              onPieceDrop={onDrop}          // ✅ klik diproses lewat drop
+              onSquareClick={onSquareClick}    // ✅ Menggunakan onSquareClick untuk click-to-move
               onSquareRightClick={onSquareRightClick}
               boardOrientation={boardOrientation}
-              arePiecesDraggable={false}    // 🚀 drag dimatikan
+              arePiecesDraggable={false}    // Drag dinonaktifkan
               customSquareClasses={{
                 ...Object.fromEntries(
                   Object.entries(optionSquares).map(([sq, val]) => [sq, val.className])
