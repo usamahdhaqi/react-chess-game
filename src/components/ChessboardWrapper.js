@@ -18,11 +18,7 @@ function ChessboardWrapper({
           onSquareRightClick={onSquareRightClick}
           boardOrientation={boardOrientation}
           arePiecesDraggable={false}
-          customSquares={{
-            ...Object.fromEntries(
-              Object.entries(optionSquares).map(([sq, val]) => [sq, val.className])
-            ),
-          }}
+          customSquares={optionSquares}
           customBoardStyle={{
             borderRadius: "4px",
             boxShadow: "0 5px 15px rgba(0, 0, 0, 0.15)",
