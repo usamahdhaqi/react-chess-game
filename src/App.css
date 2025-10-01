@@ -62,30 +62,26 @@
 /* Highlight kotak asal bidak (lebih tebal) */
 .highlight-from {
   background-color: rgba(90, 75, 129, 0.45) !important; /* Ungu gelap transparan */
-  box-shadow: inset 0 0 10px rgba(90, 75, 129, 0.8);
-  border: 2px solid #5a4b81;
+  /* Menggunakan box-shadow yang lebih jelas */
+  box-shadow: 0 0 0 3px #5a4b81, inset 0 0 10px rgba(90, 75, 129, 0.8) !important;
+  border: none;
 }
 
-/* Highlight kotak tujuan (titik transparan yang lebih elegan) */
+/* Highlight kotak tujuan (SOLUSI BARU: Sorotan Kotak Penuh) */
 .highlight-target {
-  /* Titik solid untuk tujuan */
-  background: radial-gradient(circle, rgba(90, 75, 129, 0.7) 18%, transparent 20%) !important;
-  border-radius: 50%;
-  opacity: 1; /* Pastikan terlihat */
+  /* Sorotan ungu transparan penuh */
+  background: rgba(190, 173, 250, 0.35) !important; 
+  position: relative !important; 
+  opacity: 1; 
+  /* Tambahkan box-shadow luar sebagai cincin tipis, terlihat bagus saat capture */
+  box-shadow: inset 0 0 0 3px rgba(90, 75, 129, 0.7);
 }
 
-/* Highlight tujuan jika ada bidak yang bisa dimakan (lingkaran luar) */
+/* Hapus Pseudo-element ::after yang menyebabkan masalah layering */
 .highlight-target::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  box-shadow: inset 0 0 0 3px rgba(90, 75, 129, 0.7); /* Lingkaran ungu tipis */
-  pointer-events: none;
+  content: none;
 }
+
 
 /* Highlight kotak setelah gerakan selesai */
 .highlight-to {
