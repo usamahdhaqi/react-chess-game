@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Chessboard } from 'react-chessboard';
-import { Chess } from 'chess.js';   // ✅ sesuai chess.js v1.x
+import { Chess } from 'chess.js';
 import './App.css';
 
 function App() {
@@ -12,16 +12,14 @@ function App() {
   const [status, setStatus] = useState('In Progress');
   const [turn, setTurn] = useState('White');
   
-  // ✅ State baru: Melacak warna yang dimainkan oleh pengguna ('w' untuk White, 'b' untuk Black)
-  const [userColor, setUserColor] = useState('w'); // Default: Pengguna bermain sebagai Putih
-  
-  // ✅ State untuk Click-to-Move (Deklarasi yang hilang)
-  const [sourceSquare, setSourceSquare] = useState(''); // Kotak asal yang dipilih
+  // State untuk melacak warna pengguna dan source square untuk click-to-move
+  const [userColor, setUserColor] = useState('w'); // Default: Pengguna Putih
+  const [sourceSquare, setSourceSquare] = useState(''); 
 
   // Tentukan warna AI berdasarkan warna pengguna
   const aiColor = userColor === 'w' ? 'b' : 'w';
 
-  // ✅ update status game
+  // ✅ 1. Update status game
   const updateGameStatus = useCallback(() => {
     if (game.in_checkmate()) setStatus('Checkmate!');
     else if (game.in_draw()) setStatus('Draw!');
@@ -31,20 +29,67 @@ function App() {
 
     setTurn(game.turn() === 'w' ? 'White' : 'Black');
   }, [game]);
+  
+  // ✅ 2. Logika Gerakan AI (menggunakan useCallback & functional update)
+  const makeAIMove = useCallback(() => {
+    // Menggunakan setGame dengan functional update (currentGame) untuk mendapatkan state game terbaru.
+    setGame(currentGame => {
+      // Hentikan jika game selesai atau ini bukan giliran AI
+      if (currentGame.game_over() || currentGame.turn() !== aiColor) {
+          return currentGame;
+      }
+      
+      const possibleMoves = currentGame.moves({ verbose: true });
+      if (possibleMoves.length === 0) return currentGame;
 
-  // ✅ Logika inisial AI move (Jika pengguna bermain Hitam)
+      // Pilih langkah acak
+      const randomIndex = Math.floor(Math.random() * possibleMoves.length);
+      const move = possibleMoves[randomIndex];
+
+      // Lakukan langkah pada salinan game yang diperbarui
+      const gameCopy = new Chess(currentGame.fen());
+      gameCopy.move({
+        from: move.from,
+        to: move.to,
+        promotion: move.promotion ? 'q' : undefined,
+      });
+
+      // Update history
+      setMoveHistory(prev => [...prev, move.san]);
+
+      // Highlight asal & tujuan AI
+      const newSquares = {
+        [move.from]: { className: 'highlight-from' },
+        [move.to]: { className: 'highlight-to' },
+      };
+      setOptionSquares(newSquares);
+
+      return gameCopy; // Kembalikan objek game yang baru
+    });
+  }, [aiColor]);
+
+  // ✅ EFFECT 1: Update Status Game setelah setiap render
   useEffect(() => {
     updateGameStatus();
-    
-    // Panggil makeAIMove jika ini giliran AI dan belum ada gerakan yang dilakukan (hanya di awal)
-    if (userColor === 'b' && game.turn() === 'w' && moveHistory.length === 0 && status === 'In Progress') {
-      setTimeout(makeAIMove, 500); // Beri sedikit delay untuk pengalaman yang lebih baik
-    }
-  }, [game, updateGameStatus, userColor, moveHistory, status]);
+  }, [game, updateGameStatus]);
 
-  // ✅ Highlight kemungkinan gerakan
+  // ✅ EFFECT 2: Kontrol Giliran AI (Dipicu setelah langkah user selesai)
+  useEffect(() => {
+    // Cek apakah ini giliran AI dan game belum berakhir
+    if (game.turn() === aiColor && !game.game_over()) {
+      // Beri sedikit delay sebelum AI bergerak
+      const timer = setTimeout(() => {
+        makeAIMove();
+      }, 500); // 500ms delay
+
+      return () => clearTimeout(timer); // Cleanup timer jika state berubah
+    }
+  }, [game, aiColor, makeAIMove]);
+
+  // --- Fungsi Game Logic ---
+
+  // Highlight kemungkinan gerakan
   function highlightMoves(square) {
-    // Hanya izinkan pengguna menyorot bidak jika itu giliran mereka
     if (game.turn() !== userColor || game.game_over()) return;
 
     const moves = game.moves({
@@ -58,9 +103,8 @@ function App() {
     }
 
     const newSquares = {};
-    newSquares[square] = { className: 'highlight-from' }; // Kotak asal
-
-    // Sorot semua kotak tujuan yang valid (menggunakan highlight-target)
+    newSquares[square] = { className: 'highlight-from' };
+    
     moves.forEach((move) => {
       newSquares[move.to] = { className: 'highlight-target' };
     });
@@ -68,117 +112,73 @@ function App() {
     setOptionSquares(newSquares);
   }
 
-  // ✅ eksekusi move
+  // Eksekusi move
   function makeMove(from, to) {
-    // Hanya izinkan move jika game belum berakhir dan ini giliran pengguna
     if (game.game_over() || game.turn() !== userColor) {
         return null;
     }
     
     try {
       const gameCopy = new Chess(game.fen());
-      // Lakukan gerakan, asumsikan promosi menjadi Ratu ('q')
       const move = gameCopy.move({ from, to, promotion: 'q' });
 
       if (move) {
         setGame(gameCopy);
         setMoveHistory((prev) => [...prev, move.san]);
 
-        // highlight asal & tujuan
+        // Highlight asal & tujuan
         const newSquares = {
           [from]: { className: 'highlight-from' },
           [to]: { className: 'highlight-to' },
         };
         setOptionSquares(newSquares);
         
-        // Panggil AI jika ini giliran AI berikutnya
-        if (!gameCopy.game_over() && gameCopy.turn() === aiColor) {
-            setTimeout(makeAIMove, 300);
-        }
-
+        // Catatan: Pemicu AI kini ditangani oleh useEffect(EFFECT 2).
         return move;
       }
     } catch (error) {
-      // Gerakan tidak valid
       return null;
     }
     return null;
   }
-
-  // ✅ AI move sederhana (random)
-  function makeAIMove() {
-    // Hentikan jika game selesai atau ini bukan giliran AI
-    if (game.game_over() || game.turn() !== aiColor) {
-        return;
-    }
-    
-    const possibleMoves = game.moves({ verbose: true });
-    if (possibleMoves.length === 0) return;
-
-    // Pilih langkah acak
-    const randomIndex = Math.floor(Math.random() * possibleMoves.length);
-    const move = possibleMoves[randomIndex];
-
-    const gameCopy = new Chess(game.fen());
-    gameCopy.move({
-      from: move.from,
-      to: move.to,
-      promotion: move.promotion ? 'q' : undefined,
-    });
-
-    setGame(gameCopy);
-    setMoveHistory((prev) => [...prev, move.san]);
-
-    // highlight asal & tujuan AI
-    const newSquares = {
-      [move.from]: { className: 'highlight-from' },
-      [move.to]: { className: 'highlight-to' },
-    };
-    setOptionSquares(newSquares);
-  }
-
-  // ✅ reset game
+  
+  // Reset game
   function resetGame() {
     const newGame = new Chess();
     setGame(newGame);
     setMoveHistory([]);
     setOptionSquares({});
     setRightClickedSquares({});
-    // Status akan diperbarui oleh useEffect
-    // userColor tetap dipertahankan
+    setSourceSquare('');
   }
 
-  // ✅ onSquareClick handler untuk click-to-move
+  // Click-to-Move handler
   function onSquareClick(square) {
-    // Pastikan game belum berakhir
     if (game.game_over()) return;
 
-    setRightClickedSquares({}); // Hapus highlight klik kanan setiap kali klik baru
+    setRightClickedSquares({});
     
-    // 1. Jika belum ada kotak asal yang dipilih
+    // Klik pertama (Memilih bidak)
     if (!sourceSquare) {
-      // Pastikan kotak punya bidak dan itu giliran pengguna
       const piece = game.get(square);
       if (piece && piece.color === userColor && game.turn() === userColor) {
         setSourceSquare(square);
         highlightMoves(square);
         return;
       }
-      return; // Abaikan klik jika bukan giliran pengguna, atau kotak kosong
-    }
-
-    // 2. Jika kotak asal sudah dipilih (ini klik kedua/tujuan)
-    const move = makeMove(sourceSquare, square);
-
-    // Jika gerakan berhasil (makeMove sudah memicu AI jika giliran AI berikutnya)
-    if (move) {
-      setSourceSquare(''); // Reset kotak asal
-      setOptionSquares({}); // Hapus sorotan
       return;
     }
 
-    // 3. Jika klik kedua tidak valid, tetapi klik di bidak sendiri
-    // Ini berarti pemain ingin mengganti bidak yang akan digerakkan
+    // Klik kedua (Melakukan gerakan)
+    const move = makeMove(sourceSquare, square);
+
+    if (move) {
+      setSourceSquare(''); 
+      setOptionSquares({}); 
+      return;
+    }
+
+    // Klik di bidak sendiri (Mengganti bidak yang dipilih)
     const piece = game.get(square);
     if (piece && piece.color === userColor && game.turn() === userColor) {
       setSourceSquare(square);
@@ -186,12 +186,12 @@ function App() {
       return;
     }
     
-    // 4. Jika klik kedua tidak valid sama sekali (misal, klik di kotak kosong yang bukan target)
+    // Klik tidak valid, reset pilihan
     setSourceSquare('');
     setOptionSquares({});
   }
 
-  // ✅ right click mark square
+  // Right click handler
   function onSquareRightClick(square) {
     const colour = 'rgba(255, 248, 201, 0.7)';
     setRightClickedSquares({
@@ -204,16 +204,14 @@ function App() {
     });
   }
 
-  // ✅ flip board
+  // Flip board handler
   function flipBoard() {
-    // Ganti orientasi papan
     setBoardOrientation(prev => {
         const newOrientation = prev === 'white' ? 'black' : 'white';
         // Pengguna bermain warna di bagian bawah papan
         setUserColor(newOrientation === 'white' ? 'w' : 'b'); 
         return newOrientation;
     });
-    // Mulai game baru setelah flip
     resetGame();
   }
 
@@ -230,10 +228,10 @@ function App() {
             <Chessboard
               id="styled-board"
               position={game.fen()}
-              onSquareClick={onSquareClick}    // ✅ Menggunakan onSquareClick untuk click-to-move
+              onSquareClick={onSquareClick}
               onSquareRightClick={onSquareRightClick}
               boardOrientation={boardOrientation}
-              arePiecesDraggable={false}    // Drag dinonaktifkan
+              arePiecesDraggable={false}
               customSquareClasses={{
                 ...Object.fromEntries(
                   Object.entries(optionSquares).map(([sq, val]) => [sq, val.className])
