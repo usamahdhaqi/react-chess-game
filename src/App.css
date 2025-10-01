@@ -1,21 +1,27 @@
 .app {
   text-align: center;
   min-height: 100vh;
+  /* Warna latar belakang cerah */
   background: linear-gradient(135deg, #D0BFFF 0%, #DFCCFB 100%);
   padding: 20px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
 }
 
 .app-header {
   margin-bottom: 30px;
-  color: #333;
+  /* Tambahkan sedikit kedalaman */
+  background: rgba(255, 255, 255, 0.5);
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .app-header h1 {
   font-size: 2.5rem;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
   color: #5a4b81;
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.15);
 }
 
 .app-header p {
@@ -40,9 +46,10 @@
 
 .chessboard-wrapper {
   width: 100%;
-  aspect-ratio: 1 / 1; /* papan selalu kotak */
+  aspect-ratio: 1 / 1;
 }
 
+/* Pastikan papan catur mengisi wrapper */
 .react-chessboard {
   width: 100% !important;
   height: 100% !important;
@@ -52,29 +59,43 @@
 /* HIGHLIGHT CLICK-TO-MOVE */
 /* ===================== */
 
-/* Highlight kotak asal bidak (kotak penuh ungu) */
+/* Highlight kotak asal bidak (lebih tebal) */
 .highlight-from {
-  background-color: rgba(190, 173, 250, 0.35) !important;
-  box-shadow: inset 0 0 10px rgba(90, 75, 129, 0.7);
+  background-color: rgba(90, 75, 129, 0.45) !important; /* Ungu gelap transparan */
+  box-shadow: inset 0 0 10px rgba(90, 75, 129, 0.8);
+  border: 2px solid #5a4b81;
 }
 
-/* Highlight kotak tujuan yang valid (lingkaran ungu). */
-/* Class ini digunakan oleh highlightMoves di App.js */
+/* Highlight kotak tujuan (titik transparan yang lebih elegan) */
 .highlight-target {
-  background: radial-gradient(circle, rgba(190, 173, 250, 0.9) 35%, transparent 36%);
+  /* Titik solid untuk tujuan */
+  background: radial-gradient(circle, rgba(90, 75, 129, 0.7) 18%, transparent 20%) !important;
   border-radius: 50%;
+  opacity: 1; /* Pastikan terlihat */
 }
 
-/* Highlight kotak tujuan akhir (setelah move dilakukan) */
+/* Highlight tujuan jika ada bidak yang bisa dimakan (lingkaran luar) */
+.highlight-target::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 3px rgba(90, 75, 129, 0.7); /* Lingkaran ungu tipis */
+  pointer-events: none;
+}
+
+/* Highlight kotak setelah gerakan selesai */
 .highlight-to {
-  background-color: rgba(255, 248, 201, 0.5) !important;
-  box-shadow: inset 0 0 5px rgba(255, 165, 0, 0.5);
+  background-color: rgba(255, 230, 0, 0.4) !important;
 }
 
 
-/* Hover efek tambahan */
+/* Efek hover untuk kotak */
 .square:hover {
-  outline: 2px solid rgba(190, 173, 250, 0.7);
+  outline: 3px solid rgba(190, 173, 250, 0.8);
   cursor: pointer;
 }
 
@@ -84,39 +105,41 @@
   flex: 1;
   min-width: 300px;
   max-width: 400px;
-  background-color: rgba(255, 255, 255, 0.8);
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  background-color: rgba(255, 255, 255, 0.95); /* Lebih putih */
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); /* Bayangan lebih dalam */
 }
 
 .move-history {
-  margin-bottom: 20px;
+  margin-bottom: 25px;
 }
 
 .move-history h3 {
   color: #5a4b81;
   margin-bottom: 15px;
-  border-bottom: 2px solid #BEADFA;
+  border-bottom: 3px solid #BEADFA;
   padding-bottom: 5px;
 }
 
 .moves-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  max-height: 200px;
+  gap: 12px;
+  max-height: 250px;
   overflow-y: auto;
-  padding: 10px;
-  background-color: rgba(223, 204, 251, 0.3);
-  border-radius: 4px;
+  padding: 15px;
+  background-color: rgba(223, 204, 251, 0.2);
+  border-radius: 8px;
+  border: 1px solid #BEADFA;
 }
 
 .move {
   background-color: #FFF8C9;
-  padding: 5px 10px;
-  border-radius: 4px;
+  padding: 6px 12px;
+  border-radius: 6px;
   font-weight: 500;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
 .move-number {
@@ -128,20 +151,22 @@
 .buttons {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: 15px;
+  margin-bottom: 25px;
   justify-content: center;
 }
 
 .btn {
-  padding: 10px 15px;
+  padding: 12px 20px;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 700;
   transition: all 0.3s ease;
   flex: 1;
   min-width: 120px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-transform: uppercase;
 }
 
 .no-moves {
@@ -150,12 +175,13 @@
 }
 
 .instruction {
-  font-size: 0.9em;
+  font-size: 0.95em;
   color: #5a4b81;
-  margin-top: 10px;
-  padding: 8px;
-  background-color: rgba(255, 248, 201, 0.3);
-  border-radius: 4px;
+  margin-top: 15px;
+  padding: 10px;
+  background-color: rgba(255, 248, 201, 0.5);
+  border-radius: 6px;
+  border-left: 5px solid #BEADFA;
 }
 
 .btn-reset {
@@ -166,22 +192,25 @@
 .btn-reset:hover {
   background-color: #9f8aef;
   transform: translateY(-2px);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
 }
 
 .btn-flip {
   background-color: #D0BFFF;
-  color: white;
+  color: #5a4b81;
 }
 
 .btn-flip:hover {
   background-color: #b9a5f0;
   transform: translateY(-2px);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
 }
 
 .game-status {
-  padding: 15px;
+  padding: 20px;
   background-color: rgba(190, 173, 250, 0.2);
-  border-radius: 4px;
+  border-radius: 8px;
+  border: 1px dashed #BEADFA;
 }
 
 .game-status h3 {
@@ -196,12 +225,12 @@
 
 .status-text {
   font-weight: bold;
-  color: #5a4b81;
-  font-size: 1.1em;
+  color: #a30000; /* Merah untuk status kritis */
+  font-size: 1.2em;
 }
 
 .turn-text {
-  font-weight: 500;
+  font-weight: 600;
 }
 
 /* ===================== */
