@@ -8,20 +8,6 @@ import MoveHistory from "./components/MoveHistory";
 import GameControls from "./components/GameControls";
 import GameStatus from "./components/GameStatus";
 
-const highlightStyles = {
-  from: {
-    background: "rgba(90, 75, 129, 0.45)",
-    boxShadow: "0 0 0 3px #5a4b81, inset 0 0 10px rgba(90, 75, 129, 0.8)",
-  },
-  target: {
-    background: "rgba(190, 173, 250, 0.35)",
-    boxShadow: "inset 0 0 0 3px rgba(90, 75, 129, 0.7)",
-  },
-  to: {
-    backgroundColor: "rgba(255, 230, 0, 0.4)",
-  },
-};
-
 function App() {
   const [game, setGame] = useState(new Chess());
   const [boardOrientation, setBoardOrientation] = useState("white");
@@ -66,8 +52,8 @@ function App() {
       setMoveHistory((prev) => [...prev, move.san]);
 
       setOptionSquares({
-        [move.from]: highlightStyles.from,
-        [move.to]: highlightStyles.to,
+        [move.from]: { background: "rgba(90, 75, 129, 0.3)" },
+        [move.to]: { background: "rgba(255, 230, 0, 0.4)" },
       });
 
       return gameCopy;
@@ -96,9 +82,12 @@ function App() {
       return;
     }
 
-    const newSquares = { [square]: highlightStyles.from };
+    // Kotak asal bidak = highlight ungu lembut
+    const newSquares = { [square]: { background: "rgba(90, 75, 129, 0.3)" } };
+
+    // Kotak target valid = tandai dengan { isTarget: true }
     moves.forEach((move) => {
-      newSquares[move.to] = highlightStyles.target;
+      newSquares[move.to] = { isTarget: true };
     });
 
     setOptionSquares(newSquares);
@@ -113,8 +102,8 @@ function App() {
         setGame(gameCopy);
         setMoveHistory((prev) => [...prev, move.san]);
         setOptionSquares({
-          [from]: highlightStyles.from,
-          [to]: highlightStyles.to, // Gunakan style 'to' untuk kotak tujuan
+          [from]: { background: "rgba(90, 75, 129, 0.3)" },
+          [to]: { background: "rgba(255, 230, 0, 0.4)" },
         });
         return move;
       }

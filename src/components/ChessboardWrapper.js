@@ -25,6 +25,19 @@ function ChessboardWrapper({
           }}
           customDarkSquareStyle={{ backgroundColor: "#BEADFA" }}
           customLightSquareStyle={{ backgroundColor: "#DFCCFB" }}
+          customSquareRenderer={({ square, children, style }) => {
+            const isTarget =
+              optionSquares[square] && optionSquares[square].isTarget;
+
+            return (
+              <div style={{ ...style, position: "relative" }}>
+                {children}
+                {isTarget && (
+                  <div className="square-highlight-circle" />
+                )}
+              </div>
+            );
+          }}
         />
       </div>
     </div>

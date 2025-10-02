@@ -1,7 +1,6 @@
 .app {
   text-align: center;
   min-height: 100vh;
-  /* Warna latar belakang cerah */
   background: linear-gradient(135deg, #D0BFFF 0%, #DFCCFB 100%);
   padding: 20px;
   font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -10,7 +9,6 @@
 
 .app-header {
   margin-bottom: 30px;
-  /* Tambahkan sedikit kedalaman */
   background: rgba(255, 255, 255, 0.5);
   padding: 15px;
   border-radius: 12px;
@@ -49,47 +47,51 @@
   aspect-ratio: 1 / 1;
 }
 
-/* Pastikan papan catur mengisi wrapper */
 .react-chessboard {
   width: 100% !important;
   height: 100% !important;
 }
 
 /* ===================== */
-/* HIGHLIGHT CLICK-TO-MOVE */
+/* HIGHLIGHT CLICK-TO-MOVE (Versi Modern Minimalis) */
 /* ===================== */
 
-/* Highlight kotak asal bidak (lebih tebal) */
+/* Kotak asal bidak */
 .highlight-from {
-  background-color: rgba(90, 75, 129, 0.45) !important; /* Ungu gelap transparan */
-  /* Menggunakan box-shadow yang lebih jelas */
-  box-shadow: 0 0 0 3px #5a4b81, inset 0 0 10px rgba(90, 75, 129, 0.8) !important;
-  border: none;
+  box-shadow: inset 0 0 0 3px rgba(90, 75, 129, 0.9),
+              0 0 10px rgba(90, 75, 129, 0.4);
+  border-radius: 4px;
 }
 
-/* Highlight kotak tujuan (SOLUSI BARU: Sorotan Kotak Penuh) */
-.highlight-target {
-  /* Sorotan ungu transparan penuh */
-  background: rgba(190, 173, 250, 0.35) !important; 
-  position: relative !important; 
-  opacity: 1; 
-  /* Tambahkan box-shadow luar sebagai cincin tipis, terlihat bagus saat capture */
-  box-shadow: inset 0 0 0 3px rgba(90, 75, 129, 0.7);
-}
-
-/* Hapus Pseudo-element ::after yang menyebabkan masalah layering */
-.highlight-target::after {
-  content: none;
-}
-
-
-/* Highlight kotak setelah gerakan selesai */
+/* Kotak tujuan akhir gerakan */
 .highlight-to {
-  background-color: rgba(255, 230, 0, 0.4) !important;
+  box-shadow: inset 0 0 0 3px rgba(255, 200, 0, 0.9),
+              0 0 12px rgba(255, 200, 0, 0.6);
+  border-radius: 4px;
 }
 
+/* Lingkaran highlight di tengah kotak (target valid) */
+.square-highlight-circle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 35%;
+  height: 35%;
+  background: rgba(190, 173, 250, 0.75);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: pulse 1.5s infinite;
+  pointer-events: none;
+}
 
-/* Efek hover untuk kotak */
+/* Animasi pulse */
+@keyframes pulse {
+  0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.6; }
+  50% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.6; }
+}
+
+/* Efek hover kotak */
 .square:hover {
   outline: 3px solid rgba(190, 173, 250, 0.8);
   cursor: pointer;
@@ -101,10 +103,10 @@
   flex: 1;
   min-width: 300px;
   max-width: 400px;
-  background-color: rgba(255, 255, 255, 0.95); /* Lebih putih */
+  background-color: rgba(255, 255, 255, 0.95);
   border-radius: 12px;
   padding: 25px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); /* Bayangan lebih dalam */
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
 
 .move-history {
@@ -221,7 +223,7 @@
 
 .status-text {
   font-weight: bold;
-  color: #a30000; /* Merah untuk status kritis */
+  color: #a30000;
   font-size: 1.2em;
 }
 
