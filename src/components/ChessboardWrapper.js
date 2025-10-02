@@ -6,7 +6,6 @@ function ChessboardWrapper({
   optionSquares,
   boardOrientation,
   onSquareClick,
-  onSquareRightClick,
 }) {
   return (
     <div className="chessboard-container">
@@ -15,10 +14,9 @@ function ChessboardWrapper({
           id="styled-board"
           position={game.fen()}
           onSquareClick={onSquareClick}
-          onSquareRightClick={onSquareRightClick}
           boardOrientation={boardOrientation}
           arePiecesDraggable={false}
-          customSquares={optionSquares}
+          customSquareStyles={optionSquares}
           customBoardStyle={{
             borderRadius: "4px",
             boxShadow: "0 5px 15px rgba(0, 0, 0, 0.15)",
