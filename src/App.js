@@ -8,6 +8,20 @@ import MoveHistory from "./components/MoveHistory";
 import GameControls from "./components/GameControls";
 import GameStatus from "./components/GameStatus";
 
+const highlightStyles = {
+  from: {
+    background: "rgba(90, 75, 129, 0.35)",
+    boxShadow: "inset 0 0 0 3px rgba(90, 75, 129, 0.7)",
+  },
+  target: {
+    background: "rgba(190, 173, 250, 0.4)",
+  },
+  to: {
+    background: "rgba(255, 230, 0, 0.5)",
+    boxShadow: "inset 0 0 0 3px rgba(255, 200, 0, 0.7)",
+  },
+};
+
 function App() {
   const [game, setGame] = useState(new Chess());
   const [boardOrientation, setBoardOrientation] = useState("white");
@@ -51,10 +65,10 @@ function App() {
 
       setMoveHistory((prev) => [...prev, move.san]);
 
-      // highlight asal dan tujuan AI
+      // Highlight langkah AI
       setOptionSquares({
-        [move.from]: { isFrom: true },
-        [move.to]: { isTo: true },
+        [move.from]: highlightStyles.from,
+        [move.to]: highlightStyles.to,
       });
 
       return gameCopy;
@@ -83,12 +97,9 @@ function App() {
       return;
     }
 
-    // highlight kotak asal
-    const newSquares = { [square]: { isFrom: true } };
-
-    // highlight semua kotak tujuan
+    const newSquares = { [square]: highlightStyles.from };
     moves.forEach((move) => {
-      newSquares[move.to] = { isTarget: true };
+      newSquares[move.to] = highlightStyles.target;
     });
 
     setOptionSquares(newSquares);
@@ -102,11 +113,9 @@ function App() {
       if (move) {
         setGame(gameCopy);
         setMoveHistory((prev) => [...prev, move.san]);
-
-        // highlight asal dan tujuan move
         setOptionSquares({
-          [from]: { isFrom: true },
-          [to]: { isTo: true },
+          [from]: highlightStyles.from,
+          [to]: highlightStyles.to,
         });
         return move;
       }
@@ -127,7 +136,6 @@ function App() {
   function onSquareClick(square) {
     if (game.game_over()) return;
 
-    // Klik pertama (pilih bidak yang sesuai giliran)
     if (!sourceSquare) {
       const piece = game.get(square);
       if (piece && piece.color === game.turn()) {
@@ -138,7 +146,6 @@ function App() {
       return;
     }
 
-    // Klik kedua (coba lakukan move)
     const move = makeMove(sourceSquare, square);
 
     if (move) {
@@ -147,7 +154,6 @@ function App() {
       return;
     }
 
-    // Klik di bidak lain (masih sesuai giliran → ganti pilihan)
     const piece = game.get(square);
     if (piece && piece.color === game.turn()) {
       setSourceSquare(square);
@@ -155,7 +161,6 @@ function App() {
       return;
     }
 
-    // Klik tidak valid → reset
     setSourceSquare('');
     setOptionSquares({});
   }
