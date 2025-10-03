@@ -10,13 +10,16 @@ import GameStatus from "./components/GameStatus";
 
 const highlightStyles = {
   from: {
-    background: "rgba(60, 40, 100, 0.55)", // ungu gelap transparan
+    background: "rgba(60, 40, 100, 0.55)", // asal (ungu gelap)
   },
   target: {
-    background: "rgba(120, 100, 180, 0.45)", // ungu sedang
+    background: "rgba(120, 100, 180, 0.45)", // target kosong (ungu sedang)
+  },
+  capture: {
+    background: "rgba(200, 50, 50, 0.55)", // target dengan bidak lawan (merah transparan)
   },
   to: {
-    background: "rgba(255, 200, 0, 0.55)", // kuning gelap transparan
+    background: "rgba(255, 200, 0, 0.55)", // tujuan langkah terakhir (kuning)
   },
 };
 
@@ -96,8 +99,16 @@ function App() {
     }
 
     const newSquares = { [square]: highlightStyles.from };
+
     moves.forEach((move) => {
-      newSquares[move.to] = highlightStyles.target;
+      const targetPiece = game.get(move.to); // cek isi kotak
+      if (targetPiece && targetPiece.color !== game.turn()) {
+        // kalau ada bidak lawan → highlight merah
+        newSquares[move.to] = highlightStyles.capture;
+      } else {
+        // kotak kosong → highlight ungu biasa
+        newSquares[move.to] = highlightStyles.target;
+      }
     });
 
     setOptionSquares(newSquares);
