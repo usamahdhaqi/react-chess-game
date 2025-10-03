@@ -51,9 +51,10 @@ function App() {
 
       setMoveHistory((prev) => [...prev, move.san]);
 
+      // highlight asal dan tujuan AI
       setOptionSquares({
-        [move.from]: { background: "rgba(90, 75, 129, 0.3)" },
-        [move.to]: { background: "rgba(255, 230, 0, 0.4)" },
+        [move.from]: { isFrom: true },
+        [move.to]: { isTo: true },
       });
 
       return gameCopy;
@@ -82,10 +83,10 @@ function App() {
       return;
     }
 
-    // Kotak asal bidak = highlight ungu lembut
-    const newSquares = { [square]: { background: "rgba(90, 75, 129, 0.3)" } };
+    // highlight kotak asal
+    const newSquares = { [square]: { isFrom: true } };
 
-    // Kotak target valid = tandai dengan { isTarget: true }
+    // highlight semua kotak tujuan
     moves.forEach((move) => {
       newSquares[move.to] = { isTarget: true };
     });
@@ -101,9 +102,11 @@ function App() {
       if (move) {
         setGame(gameCopy);
         setMoveHistory((prev) => [...prev, move.san]);
+
+        // highlight asal dan tujuan move
         setOptionSquares({
-          [from]: { background: "rgba(90, 75, 129, 0.3)" },
-          [to]: { background: "rgba(255, 230, 0, 0.4)" },
+          [from]: { isFrom: true },
+          [to]: { isTo: true },
         });
         return move;
       }
