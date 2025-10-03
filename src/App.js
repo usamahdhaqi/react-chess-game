@@ -10,15 +10,13 @@ import GameStatus from "./components/GameStatus";
 
 const highlightStyles = {
   from: {
-    background: "rgba(90, 75, 129, 0.35)",
-    boxShadow: "inset 0 0 0 3px rgba(90, 75, 129, 0.7)",
+    background: "rgba(60, 40, 100, 0.55)", // ungu gelap transparan
   },
   target: {
-    background: "rgba(190, 173, 250, 0.4)",
+    background: "rgba(120, 100, 180, 0.45)", // ungu sedang
   },
   to: {
-    background: "rgba(255, 230, 0, 0.5)",
-    boxShadow: "inset 0 0 0 3px rgba(255, 200, 0, 0.7)",
+    background: "rgba(255, 200, 0, 0.55)", // kuning gelap transparan
   },
 };
 
