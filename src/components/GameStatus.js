@@ -5,7 +5,6 @@ function GameStatus({ status, turn, userColor }) {
     <div className="game-status">
       <h3>Game Status</h3>
       <p className="status-text">{status}</p>
-      <p className="turn-text">Giliran: {turn}</p>
       <p className="instruction">
         Anda bermain sebagai:{" "}
         <span

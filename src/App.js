@@ -104,7 +104,6 @@ function App() {
   const [optionSquares, setOptionSquares] = useState({});
   const [moveHistory, setMoveHistory] = useState([]);
   const [status, setStatus] = useState("In Progress");
-  const [turn, setTurn] = useState("Putih");
   const [userColor, setUserColor] = useState("w");
   const [sourceSquare, setSourceSquare] = useState("");
   
@@ -120,8 +119,6 @@ function App() {
     else if (game.in_check()) setStatus("Check!"); //
     else if (game.in_stalemate()) setStatus("Stalemate!"); //
     else setStatus("In Progress"); //
-
-    setTurn(game.turn() === "w" ? "Putih" : "Hitam"); //
   }, [game]); //
 
   const makeAIMove = useCallback(() => {
@@ -288,7 +285,7 @@ function App() {
           onSquareClick={onSquareClick}
         />
         <div className="game-controls">
-          <GameStatus status={status} turn={turn} userColor={userColor} />
+          <GameStatus status={status} userColor={userColor} />
           {/* Tambahkan prop difficulty dan fungsi penangan ke GameControls */}
           <GameControls 
             resetGame={resetGame} 

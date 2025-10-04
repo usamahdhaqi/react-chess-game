@@ -29,7 +29,7 @@
 
 .chessboard-container {
   flex: 0 0 auto;
-  width: 500px;
+  width: 515px;
   max-width: 100%;
 }
 
@@ -116,6 +116,7 @@
   font-size: 0.95em;
   color: #5a4b81;
   margin-top: 15px;
+  margin-bottom: 0px;
   padding: 10px;
   background-color: rgba(255, 248, 201, 0.5);
   border-radius: 6px;
@@ -154,22 +155,19 @@
 
 .game-status h3 {
   color: #5a4b81;
-  margin-bottom: 10px;
+  margin: 0px;
 }
 
 .game-status p {
-  margin: 5px 0;
   font-weight: 500;
 }
 
 .status-text {
+  margin-top: 10px;
+  margin-bottom: 0px;
   font-weight: bold;
   color: #a30000;
   font-size: 1.2em;
-}
-
-.turn-text {
-  font-weight: 600;
 }
 
 /* ===================== */
