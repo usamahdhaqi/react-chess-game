@@ -248,7 +248,8 @@
     border: 1px solid #BEADFA;
     background-color: white;
     font-weight: 500;
-    color: #333;
+    font-style: italic;
+    color: #6c5b93;
     cursor: pointer;
     outline: none;
     transition: border-color 0.3s ease;
