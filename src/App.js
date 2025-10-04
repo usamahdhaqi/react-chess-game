@@ -28,7 +28,7 @@ function App() {
   const [optionSquares, setOptionSquares] = useState({});
   const [moveHistory, setMoveHistory] = useState([]);
   const [status, setStatus] = useState("In Progress");
-  const [turn, setTurn] = useState("White");
+  const [turn, setTurn] = useState("Putih");
   const [userColor, setUserColor] = useState("w");
   const [sourceSquare, setSourceSquare] = useState("");
 
@@ -41,7 +41,7 @@ function App() {
     else if (game.in_stalemate()) setStatus("Stalemate!");
     else setStatus("In Progress");
 
-    setTurn(game.turn() === "w" ? "White" : "Black");
+    setTurn(game.turn() === "w" ? "Putih" : "Hitam");
   }, [game]);
 
   const makeAIMove = useCallback(() => {
