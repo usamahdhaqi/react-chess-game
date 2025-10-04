@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from "react";
 import { Chess } from "chess.js";
 import "./App.css";
 
-import Header from "./components/Header";
 import ChessboardWrapper from "./components/ChessboardWrapper";
 import MoveHistory from "./components/MoveHistory";
 import GameControls from "./components/GameControls";
@@ -185,7 +184,9 @@ function App() {
 
   return (
     <div className="app">
-      <Header userColor={userColor} />
+      <header className="app-header">
+        <h1>Modern Chess Game</h1>
+      </header>
       <div className="game-container">
         <ChessboardWrapper
           game={game}
@@ -194,9 +195,9 @@ function App() {
           onSquareClick={onSquareClick}
         />
         <div className="game-controls">
-          <MoveHistory moveHistory={moveHistory} />
+          <GameStatus status={status} turn={turn} userColor={userColor} />
           <GameControls resetGame={resetGame} flipBoard={flipBoard} />
-          <GameStatus status={status} turn={turn} />
+          <MoveHistory moveHistory={moveHistory} />
         </div>
       </div>
     </div>
