@@ -15,7 +15,7 @@
 ## 🖼️ Preview
 
 <p align="center">
-  <img src="https://via.placeholder.com/900x500.png?text=Modern+Chess+Game+Preview" alt="Modern Chess Game Screenshot" width="85%">
+  <img src="./public/screenshot-chess-game.PNG" alt="Modern Chess Game Screenshot" width="85%">
 </p>
 
 ---
